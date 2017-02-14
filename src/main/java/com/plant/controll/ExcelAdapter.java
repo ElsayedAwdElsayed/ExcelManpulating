@@ -8,13 +8,21 @@ package com.plant.controll;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFRow.CellIterator;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
@@ -23,15 +31,15 @@ import org.apache.poi.ss.usermodel.Row;
 public class ExcelAdapter {
    
     private String fileName;
-    private HSSFWorkbook hSSFWorkbook;
-    private HSSFRow hSSFRow;
-    private HSSFSheet hSSFSheet;
+    private XSSFWorkbook hSSFWorkbook;
+    private XSSFRow hSSFRow;
+    private XSSFSheet hSSFSheet;
     private Iterator<Row> rowIterator;
     public ExcelAdapter(String fileName)
     {
         try{
         this.fileName=fileName;
-        hSSFWorkbook=new HSSFWorkbook(new FileInputStream(fileName));
+        hSSFWorkbook=new XSSFWorkbook(new FileInputStream(fileName));
         
         }
         catch(Exception ex)
@@ -45,6 +53,19 @@ public class ExcelAdapter {
     {
         hSSFSheet=hSSFWorkbook.getSheetAt(sheetIndex);
         rowIterator=hSSFSheet.iterator();
+       
+    }
+    public HashMap<Integer,ArrayList<String>> getHeader()
+    {
+        HashMap<Integer,ArrayList<String>> headerMap=new HashMap();
+        Row currentRow=rowIterator.next();
+        for(int i =3; i<currentRow.getLastCellNum(); i++)
+        {
+            headerMap.put(i, new ArrayList<String>());
+            headerMap.get(i).add("#"+currentRow.getCell(i).getNumericCellValue()+"= ");
+        }
+        return headerMap;
+        
     }
     
     public boolean hasRow()
